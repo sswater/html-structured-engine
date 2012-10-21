@@ -7,8 +7,8 @@ import com.regexlab.htm2struct.request.*;
  */
 public class SimpleRequester implements RequestInterface {
 
-    public void request(RequestContext context) {
-        
+    public boolean request(RequestContext context) {
+        return true;
     }
 
 }
