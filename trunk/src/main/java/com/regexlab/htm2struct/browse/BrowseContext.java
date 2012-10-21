@@ -20,7 +20,7 @@ public class BrowseContext {
     private BrowseContext parent = null;
     
     /** structured browse data */
-    private Map<String, Object> results = new HashMap<String, Object>();
+    private Map<String, Object> fields = new HashMap<String, Object>();
     
     /** special attribute not from remote server, for internal use */
     private Map<String, String> attribute = new HashMap<String, String>();
@@ -43,12 +43,12 @@ public class BrowseContext {
         this.request = parent.request;
     }
 
-    public Map<String, Object> getResults() {
-        return results;
+    public Map<String, Object> getFields() {
+        return fields;
     }
 
-    public void setResults(Map<String, Object> results) {
-        this.results = results;
+    public void setFields(Map<String, Object> fields) {
+        this.fields = fields;
     }
 
     public Map<String, String> getAttribute() {

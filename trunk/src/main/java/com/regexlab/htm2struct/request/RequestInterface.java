@@ -9,6 +9,6 @@ public interface RequestInterface {
      * do a request 
      * @param context request context for input and output
      */
-    void request(RequestContext context);
+    boolean request(RequestContext context);
     
 }

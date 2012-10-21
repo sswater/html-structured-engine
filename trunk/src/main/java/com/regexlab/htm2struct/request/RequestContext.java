@@ -210,7 +210,7 @@ public class RequestContext {
     }
 
     public String getBase() {
-        if(base == null) {
+        if(base == null && url != null) {
             base = url.substring(0, url.lastIndexOf('/') + 1);
         }
         return base;
