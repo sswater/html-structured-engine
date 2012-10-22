@@ -31,7 +31,7 @@ public class RequestContext {
     /** IN: request scope headers */
     private Map<String, String> headers = new HashMap<String, String>();
     
-    /** IN: request scope headers */
+    /** IN: request scope params */
     private Map<String, String> params  = new HashMap<String, String>();
     
     /** IN: timeout */

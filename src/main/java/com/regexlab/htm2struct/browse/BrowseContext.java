@@ -19,6 +19,9 @@ public class BrowseContext {
     /** parent result which this is upon */
     private BrowseContext parent = null;
     
+    /** context to save */
+    private BrowseContext save = null;
+    
     /** structured browse data */
     private Map<String, Object> fields = new HashMap<String, Object>();
     
@@ -41,6 +44,7 @@ public class BrowseContext {
         this.parent = parent;
         this.requester = parent.requester;
         this.request = parent.request;
+        this.save = parent.save;
     }
 
     public Map<String, Object> getFields() {
@@ -77,6 +81,14 @@ public class BrowseContext {
 
     public void setRequest(RequestContext request) {
         this.request = request;
+    }
+
+    public BrowseContext getSave() {
+        return save;
+    }
+
+    public void setSave(BrowseContext save) {
+        this.save = save;
     }
     
 }

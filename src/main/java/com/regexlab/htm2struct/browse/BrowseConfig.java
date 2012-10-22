@@ -25,6 +25,9 @@ public class BrowseConfig {
     /** charset explicitly for URL encode, null for default */
     private String charset = null;
     
+    /** proxy special, format host:port */
+    private String proxy = null;
+    
     /** explicitly request scope cookies, headers, parameters, 'k=v' separated by '|' */
     private String cookies = null, headers = null, params = null;
     
@@ -207,5 +210,13 @@ public class BrowseConfig {
 
     public String getGfmap() {
         return gfmap;
+    }
+
+    public void setProxy(String proxy) {
+        this.proxy = proxy;
+    }
+
+    public String getProxy() {
+        return proxy;
     }
 }
