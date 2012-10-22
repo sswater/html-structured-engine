@@ -156,10 +156,94 @@ public class Html2StructBrowser implements BrowseInterface {
         // parse fields
         Matcher m = regex.matcher(source);
         
-        // TODO
+        // to match
+        boolean found = false;
+        while(matcher_find(m, 10000)) {
+            
+            // found success
+            found = true;            
+            BrowseContext curr_context = new BrowseContext(brs_context);
+            
+            // whether save
+            BrowseContext context = curr_context.getSave() != null ? curr_context.getSave() : curr_context;
+            boolean save = curr_context.getSave() == null ? config.isSave() || children.size() == 0 : false;
+            if(save) curr_context.setSave(curr_context);
+            
+            // store fields
+            for(Map.Entry<Integer, String> entry : gfmap.entrySet()) {
+                String field = entry.getValue();
+                String value = m.group(entry.getKey());
+                
+                if(inherits.contains(field))
+                    context.getFields().put(field, value);
+                else {
+                    Object oldv = context.getFields().get(field);
+                    if(oldv != null) value = String.valueOf(oldv) + value;
+                    context.getFields().put(field, value);
+                }
+            }
+            
+            // process tokens to attributes
+            processTokens(curr_context);
+            
+            // children
+            for(Html2StructBrowser child : children) {
+                child.browse(curr_context, listener);
+            }
+            
+            // save
+            if(save) {
+                listener.save(curr_context);
+            }
+        }
         
+        if(!found) {
+            if(log.isWarnEnabled()) log.warn("failed to match " + m.pattern().pattern());
+        }
     }
     
+    /**
+     * process tokens to attributes
+     */
+    private void processTokens(BrowseContext curr_context) {
+        for(Map.Entry<String, String> e : config.getTokens().entrySet()) {
+            curr_context.getAttribute().put(e.getKey(), processToken(e.getValue()));
+        }
+    }
+
+    /**
+     * process one token
+     */
+    private String processToken(String value) {
+        return value;
+    }
+
+    /**
+     * matcher find within timeout
+     */
+    @SuppressWarnings("deprecation")
+    private boolean matcher_find(final Matcher m, int timeout) {
+        final List<Boolean> success = new ArrayList<Boolean>();
+        try {
+            final Thread thread = Thread.currentThread();
+            Thread t = new Thread(new Runnable() {
+                public void run() {
+                    success.add( m.find() );
+                    thread.interrupt();
+                }
+            });
+            t.setDaemon(true);
+            t.start();
+            Thread.sleep(timeout);
+            t.stop();
+            if(log.isWarnEnabled()) log.warn("the find() is forced to be closed: " + m.pattern().pattern());
+            return false;
+        }
+        catch (InterruptedException e) {
+            return success.size()>0?success.get(0):false;
+        }
+    }
+
     /**
      * add explicit settings such as method, parameters, cookies, headers etc
      */
@@ -169,6 +253,9 @@ public class Html2StructBrowser implements BrowseInterface {
         }
         if(config.getCharset() != null) {
             req_context_2.setCharset(config.getCharset());
+        }
+        if(config.getProxy() != null) {
+            req_context_2.setProxy(config.getProxy());
         }
         if(config.getHeaders() != null) {
             Map<String, String> m = getkv(config.getHeaders());
