@@ -47,9 +47,16 @@ public class Html2StructBrowser implements BrowseInterface {
         }
     }
 
+    /**
+     * some configurations need to do some build to be easy to use
+     */
     private void buildConfig() {
-        if(config.getPattern() != null) {
+        
+        if(config.getPattern() != null && config.getPattern().length() > 0) {
             regex = Pattern.compile(config.getPattern(), Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+        }
+        else {
+            regex = Pattern.compile("(.*)", Pattern.DOTALL);
         }
         
         if(config.getGfmap() != null) {
@@ -72,7 +79,10 @@ public class Html2StructBrowser implements BrowseInterface {
             }
         }
     }
-
+    
+    /**
+     * do browse
+     */
     public void browse(BrowseContext brs_context, BrowseListener listener) {
         
         boolean islink = config.isAslink();
@@ -124,28 +134,92 @@ public class Html2StructBrowser implements BrowseInterface {
                 return;
             }
             
-            // open url
+            // explicit settings
             RequestContext req_context_2 = new RequestContext(source, req_context);
+            requestSettings(req_context_2);
+            
+            // open url
             if( ! brs_context.getRequester().request(req_context_2) ) {
                 if(log.isWarnEnabled()) log.warn(source + " request failed.");
                 return;
             }
             
             // replace context
+            source = req_context_2.getStringBody();
             req_context = req_context_2;
+            
             brs_context = new BrowseContext(brs_context);
-            source = req_context.getStringBody();
+            brs_context.setRequest(req_context);
             brs_context.getFields().put("", source);
         }
         
         // parse fields
         Matcher m = regex.matcher(source);
         
-        
+        // TODO
         
     }
-
     
+    /**
+     * add explicit settings such as method, parameters, cookies, headers etc
+     */
+    private void requestSettings(RequestContext req_context_2) {
+        if(config.getMethod() != null) {
+            req_context_2.setMethod(config.getMethod());
+        }
+        if(config.getCharset() != null) {
+            req_context_2.setCharset(config.getCharset());
+        }
+        if(config.getHeaders() != null) {
+            Map<String, String> m = getkv(config.getHeaders());
+            for(String k : m.keySet()) {
+                req_context_2.setRequestHeader(k, m.get(k));
+            }
+        }
+        if(config.getCookies() != null) {
+            Map<String, String> m = getkv(config.getCookies());
+            for(String k : m.keySet()) {
+                req_context_2.setRequestCookie(k, m.get(k));
+            }
+        }
+        if(config.getParams() != null) {
+            Map<String, String> m = getkv(config.getParams());
+            for(String k : m.keySet()) {
+                req_context_2.setRequestParam(k, m.get(k));
+            }
+        }
+        if(config.getSessionHeaders() != null) {
+            Map<String, String> m = getkv(config.getSessionHeaders());
+            for(String k : m.keySet()) {
+                req_context_2.setSessionHeader(k, m.get(k));
+            }
+        }
+        if(config.getSessionCookies() != null) {
+            Map<String, String> m = getkv(config.getSessionCookies());
+            for(String k : m.keySet()) {
+                req_context_2.setSessionCookie(k, m.get(k));
+            }
+        }
+        if(config.getSessionParams() != null) {
+            Map<String, String> m = getkv(config.getSessionParams());
+            for(String k : m.keySet()) {
+                req_context_2.setSessionParam(k, m.get(k));
+            }
+        }
+    }
+    
+    private static Map<String, String> getkv(String kvstr) {
+        Map<String, String> m = new HashMap<String, String>();
+        String [] kvs = kvstr.split("\\|");
+        for(String kv : kvs) {
+            int e = kv.indexOf('=');
+            if(e > 0) {
+                m.put(kv.substring(0, e), kv.substring(e + 1));
+            }
+        }
+        return m;
+    }
+
     /**
      * make an absolute path
      */

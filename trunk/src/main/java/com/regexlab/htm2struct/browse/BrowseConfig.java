@@ -22,6 +22,9 @@ public class BrowseConfig {
     /** method explicity, null for default */
     private String method = null;
     
+    /** charset explicitly for URL encode, null for default */
+    private String charset = null;
+    
     /** explicitly request scope cookies, headers, parameters, 'k=v' separated by '|' */
     private String cookies = null, headers = null, params = null;
     
@@ -30,7 +33,7 @@ public class BrowseConfig {
     
     // ---------------- LINK END -------------
 
-    /** interested field, if null, first field */
+    /** interested field, if null, first field. a fieldname or a pattern like '$(name1)$(name2)' */
     private String interest = null;
     
     /** regex pattern to match */
@@ -39,14 +42,11 @@ public class BrowseConfig {
     /** group to field name, format 1=name|2=name */
     private String gfmap = null;
     
-    /** pattern to make the hash */
+    /** pattern to make the hash, format md5:$(name1)$(name2) */
     private String hash = null;
 
     /** fields inherits from parent, separated by '|' */
     private String inherits = null;
-    
-    /** charset explicitly, null for default */
-    private String charset = null;
     
     /** save point for multi-pages */
     private boolean save = false;
