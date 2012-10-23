@@ -81,16 +81,17 @@ public class SimpleRequester implements RequestInterface {
             String charset_2 = null;
             if(m.find())  charset_2 = m.group(1);
 
+            // find charset assuming it is html
+            if(charset_2 == null) {
+                String siso = new String(binary, "iso-8859-1");
+                m = regexMeta.matcher(siso);
+                if(m.find()) {
+                    charset_2 = m.group(1);
+                }
+            }
+
             // if it is a text/*
             if(contentType.startsWith("text") || charset_2 != null) {
-                // find charset in html
-                if(charset_2 == null) {
-                    String siso = new String(binary, "iso-8859-1");
-                    m = regexMeta.matcher(siso);
-                    if(m.find()) {
-                        charset_2 = m.group(1);
-                    }
-                }
                 
                 context.setCharset(charset_2);
                 charset_2 = charset_2 != null ? charset_2 : "utf-8";
@@ -104,6 +105,11 @@ public class SimpleRequester implements RequestInterface {
                 if (mbase.find()) {
                     context.setBase( mbase.group(2) );
                 }
+            }
+            
+            // binary to string anyway
+            else {
+                context.setStringBody(new String(binary, "iso-8859-1"));
             }
             
             return true;
@@ -242,12 +248,7 @@ public class SimpleRequester implements RequestInterface {
         return sb.toString();
     }
 
-    // to find charset from header
     private static Pattern regexContentType = Pattern.compile("charset=([^;\\s]+)", Pattern.CASE_INSENSITIVE);
-    
-    // to find charset from html
     private static Pattern regexMeta        = Pattern.compile("<meta(?:\\s*(?:http-equiv\\s*=\\s*\"?content-type\"?|content\\s*=\\s*\"?.*?charset\\s*=\\s*([^\">\\s]+)\"?)){2,}.*?>", Pattern.CASE_INSENSITIVE);
-
-    // parse base
     private static Pattern regexBase        = Pattern.compile("<base\\b(?:(?:href\\s*=\\s*(?:(\"|\')((?:(?!\\1).)*)\\1|((?![\"\'])(?:[^/>=\\s]|/(?!>))+(?=[\"\'>\\s=]|/>)))|(?:\"[^\"]*\"|\'[^\']*\'|(?![\"\'])(?:[^/>=\\s]|/(?!>))+(?=[\"\'>\\s=]|/>)|=\\s*(?!\\s)(?:(?=[\"\'])|(?![\"\'])(?:[^/>\\s]|/(?!>))*(?=[>\\s]|/>))|\\s+(?!\\s)))*)(?:/?>)", Pattern.CASE_INSENSITIVE);
 }
