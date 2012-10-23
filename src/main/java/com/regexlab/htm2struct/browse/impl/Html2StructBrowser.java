@@ -108,7 +108,7 @@ public class Html2StructBrowser implements BrowseInterface {
             
             // interest
             else {
-                Object v = brs_context.getFields().get(interest);
+                Object v = brs_context.getInheritField(interest);
                 if(v != null) {
                     source = String.valueOf(v);
                 }
@@ -183,12 +183,29 @@ public class Html2StructBrowser implements BrowseInterface {
                 }
             }
             
+            // do inherits
+            for(String field : inherits) {
+                if(context.getFields().get(field) == null) {
+                    Object v = context.getInheritField(field);
+                    if(v != null) {
+                        context.getFields().put(field, v);
+                    }
+                }
+            }
+            
             // process tokens to attributes
             processTokens(curr_context);
             
             // children
             for(Html2StructBrowser child : children) {
                 child.browse(curr_context, listener);
+            }
+            
+            // remove fields which has been further browsed, unless it is in inherits
+            for(BrowseConfig child : config.getChildren()) {
+                if(child.getInterest() != null && !this.inherits.contains(child.getInterest())) {
+                    curr_context.getFields().remove(child.getInterest());
+                }
             }
             
             // save

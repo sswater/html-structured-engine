@@ -50,6 +50,11 @@ public class BrowseContext {
     public Map<String, Object> getFields() {
         return fields;
     }
+    
+    public Object getInheritField(String field) {
+        Object v = fields.get(field);
+        return v != null ? v : parent != null ? parent.getInheritField(field) : null;
+    }
 
     public void setFields(Map<String, Object> fields) {
         this.fields = fields;
