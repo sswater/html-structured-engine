@@ -34,6 +34,13 @@ public class SimpleRequester implements RequestInterface {
 
             // fixed headers
             conn.setRequestProperty("User-Agent","Mozilla/5.0 (Windows; U; Windows NT 5.1;) Gecko/20100722 Firefox/3.6.8");
+            
+            // code
+            int code = conn.getResponseCode();
+            if(!(code >= 200 && code < 300)) {
+                if(log.isErrorEnabled()) log.error("connect failed, code = " + code + ", status = " + conn.getResponseMessage());
+                return false;
+            }
 
             // cookies to session
             List<String> cookies = conn.getHeaderFields().get("Set-Cookie");
@@ -43,12 +50,6 @@ public class SimpleRequester implements RequestInterface {
                     int pc = cookie.indexOf(';', pe); if(pc < 0) pc = cookie.length();
                     context.setSessionCookie(cookie.substring(0, pe), cookie.substring(pe+1, pc));
                 }
-            }
-            
-            // code
-            int code = conn.getResponseCode();
-            if(!(code >= 200 && code < 300)) {
-                return false;
             }
             
             // body
@@ -202,10 +203,21 @@ public class SimpleRequester implements RequestInterface {
             cookies.append(cookies.length()>0?";":"")
                    .append(e.getKey() + "=" + e.getValue());
         }
-        conn.setRequestProperty("Cookie", cookies.toString());
+        
+        if(cookies.length() > 0) {
+            conn.setRequestProperty("Cookie", cookies.toString());
+        }
         
         // time out
         conn.setReadTimeout(context.getTimeout());
+        
+        // language
+        if(context.getLanguage() != null) {
+            conn.addRequestProperty("Accept-Language", context.getLanguage());
+        }
+        else if(System.getProperty("user.language") != null) {
+            conn.addRequestProperty("Accept-Language", System.getProperty("user.language"));            
+        }
         
         // Refer
         if(context.getReferer() != null) {

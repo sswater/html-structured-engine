@@ -22,6 +22,9 @@ public class RequestContext {
     /** IN: request method */
     private String method = "GET";
     
+    /** IN: language */
+    private String language = null;
+    
     /** IN: post data */
     private byte [] post = null;
     
@@ -242,5 +245,13 @@ public class RequestContext {
 
     public void setBase(String base) {
         this.base = base;
+    }
+
+    public String getLanguage() {
+        return language != null ? language : referer != null ? referer.getLanguage() : null;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }

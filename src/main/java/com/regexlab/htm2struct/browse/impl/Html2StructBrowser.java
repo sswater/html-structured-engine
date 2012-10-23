@@ -258,6 +258,9 @@ public class Html2StructBrowser implements BrowseInterface {
         if(config.getProxy() != null) {
             req_context_2.setProxy(config.getProxy());
         }
+        if(config.getLanguage() != null) {
+            req_context_2.setLanguage(config.getLanguage());
+        }
         if(config.getHeaders() != null) {
             Map<String, String> m = getkv(config.getHeaders());
             for(String k : m.keySet()) {

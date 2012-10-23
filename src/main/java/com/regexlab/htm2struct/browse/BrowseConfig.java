@@ -28,6 +28,9 @@ public class BrowseConfig {
     /** proxy special, format host:port */
     private String proxy = null;
     
+    /** language */
+    private String language = null;
+    
     /** explicitly request scope cookies, headers, parameters, 'k=v' separated by '|' */
     private String cookies = null, headers = null, params = null;
     
@@ -218,5 +221,13 @@ public class BrowseConfig {
 
     public String getProxy() {
         return proxy;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }
