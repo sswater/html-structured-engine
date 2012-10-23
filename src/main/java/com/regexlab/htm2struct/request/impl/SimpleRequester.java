@@ -24,7 +24,7 @@ public class SimpleRequester implements RequestInterface {
         url = escape128(url, charset);
         
         // simple cache
-        
+        // TODO
         
         // do request
         HttpURLConnection conn = null;

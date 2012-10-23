@@ -215,6 +215,7 @@ public class Html2StructBrowser implements BrowseInterface {
      * process one token
      */
     private String processToken(String value) {
+        // TODO
         return value;
     }
 
