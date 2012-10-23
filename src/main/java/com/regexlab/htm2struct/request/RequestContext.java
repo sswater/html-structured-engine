@@ -14,7 +14,7 @@ public class RequestContext {
     private String url = null;
     
     /** IN: page refer */
-    private RequestContext refer = null;
+    private RequestContext referer = null;
     
     /** IN: connect proxy, format "host:port" */
     private String proxy = null;
@@ -31,11 +31,11 @@ public class RequestContext {
     /** IN: request scope headers */
     private Map<String, String> headers = new HashMap<String, String>();
     
-    /** IN: request scope params */
+    /** IN: request scope params, the value should be urlencoded already */
     private Map<String, String> params  = new HashMap<String, String>();
     
     /** IN: timeout */
-    private int timeout = 0;
+    private int timeout = 30000;
     
     /** OUT: content type */
     private String contentType = null;
@@ -60,14 +60,14 @@ public class RequestContext {
     
     /**
      * construct a context with a reference
-     * @param refer reference to previous context
+     * @param referer reference to previous context
      */
-    public RequestContext(String url, RequestContext refer)
+    public RequestContext(String url, RequestContext referer)
     {
         this.url   = url;
-        this.refer = refer;
+        this.referer = referer;
         
-        session = refer != null ? refer.session : new BrowseSession();
+        session = referer != null ? referer.session : new BrowseSession();
     }
     
     /** the session data */
@@ -79,12 +79,12 @@ public class RequestContext {
         /** session scope headers */
         Map<String, String> headers = new HashMap<String, String>();
         
-        /** session scope parameters */
+        /** session scope parameters, the value should be urlencoded already */
         Map<String, String> params  = new HashMap<String, String>();
     }
 
     public String getProxy() {
-        return proxy != null ? proxy : refer != null ? refer.getProxy() : null;
+        return proxy != null ? proxy : referer != null ? referer.getProxy() : null;
     }
 
     public void setProxy(String proxy) {
@@ -95,8 +95,8 @@ public class RequestContext {
         return url;
     }
 
-    public String getRefer() {
-        return refer != null ? refer.url : null;
+    public String getReferer() {
+        return referer != null ? referer.url : null;
     }
 
     public String getMethod() {
@@ -124,7 +124,7 @@ public class RequestContext {
     }
 
     public String getCharset() {
-        return charset != null ? charset : refer != null ? refer.getCharset() : null;
+        return charset != null ? charset : referer != null ? referer.getCharset() : null;
     }
 
     public void setCharset(String charset) {
@@ -199,6 +199,30 @@ public class RequestContext {
         else {
             this.session.params.remove(key);
         }
+    }
+    
+    public Map<String, String> getRequestCookies() {
+        return this.cookies;
+    }
+    
+    public Map<String, String> getSessionCookies() {
+        return this.session.cookies;
+    }
+
+    public Map<String, String> getRequestHeaders() {
+        return this.headers;
+    }
+    
+    public Map<String, String> getSessionHeaders() {
+        return this.session.headers;
+    }
+    
+    public Map<String, String> getRequestParams() {
+        return this.params;
+    }
+    
+    public Map<String, String> getSessionParams() {
+        return this.session.params;
     }
 
     public int getTimeout() {
