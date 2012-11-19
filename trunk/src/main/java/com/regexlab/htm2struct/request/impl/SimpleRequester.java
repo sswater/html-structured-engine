@@ -41,6 +41,9 @@ public class SimpleRequester implements RequestInterface {
                 if(log.isErrorEnabled()) log.error("connect failed, code = " + code + ", status = " + conn.getResponseMessage());
                 return false;
             }
+            
+            // adjust url for 'base' if redirected
+            context.setUrl( conn.getURL().toString() );
 
             // cookies to session
             List<String> cookies = conn.getHeaderFields().get("Set-Cookie");

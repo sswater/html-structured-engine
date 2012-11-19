@@ -98,6 +98,10 @@ public class RequestContext {
         return url;
     }
 
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public String getReferer() {
         return referer != null ? referer.url : null;
     }
