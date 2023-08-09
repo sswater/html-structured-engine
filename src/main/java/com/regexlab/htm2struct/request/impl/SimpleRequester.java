@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.regex.*;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.logging.*;
 
@@ -58,6 +59,11 @@ public class SimpleRequester implements RequestInterface {
             // body
             InputStream in = conn.getInputStream();
             byte [] binary = null;
+            
+            // gzip
+            if("gzip".equalsIgnoreCase(conn.getHeaderField("Content-Encoding"))) {
+            	in = new GZIPInputStream(in);
+            }
             
             // read binary
             {
