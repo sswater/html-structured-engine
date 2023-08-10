@@ -1,5 +1,6 @@
 package com.regexlab.htm2struct.browse.impl;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.*;
 
@@ -83,7 +84,7 @@ public class Html2StructBrowser implements BrowseInterface {
     /**
      * do browse
      */
-    public void browse(BrowseContext brs_context, BrowseListener listener) {
+    public void browse(BrowseContext brs_context, BrowseListener listener) throws IOException {
         
         boolean islink = config.isAslink();
         String source = null;
@@ -165,22 +166,22 @@ public class Html2StructBrowser implements BrowseInterface {
             BrowseContext curr_context = new BrowseContext(brs_context);
             
             // whether save
-            BrowseContext context = curr_context.getSave() != null ? curr_context.getSave() : curr_context;
-            boolean save = curr_context.getSave() == null ? config.isSave() || children.size() == 0 : false;
-            if(save) curr_context.setSave(curr_context);
+            BrowseContext context = curr_context;
+            boolean save = config.isSave() || children.size() == 0;
+            //if(save) curr_context.setSave(curr_context);
             
             // store fields
             for(Map.Entry<Integer, String> entry : gfmap.entrySet()) {
                 String field = entry.getValue();
                 String value = m.group(entry.getKey());
                 
-                if(inherits.contains(field))
+                //if(inherits.contains(field))
                     context.getFields().put(field, value);
-                else {
-                    Object oldv = context.getFields().get(field);
-                    if(oldv != null) value = String.valueOf(oldv) + value;
-                    context.getFields().put(field, value);
-                }
+                //else {
+                //    Object oldv = context.getFields().get(field);
+                //    if(oldv != null) value = String.valueOf(oldv) + value;
+                //    context.getFields().put(field, value);
+                //}
             }
             
             // do inherits
@@ -215,7 +216,10 @@ public class Html2StructBrowser implements BrowseInterface {
         }
         
         if(!found) {
-            if(log.isWarnEnabled()) log.warn("failed to match " + m.pattern().pattern());
+            if(log.isWarnEnabled()) {
+            	log.warn("failed to match " + m.pattern().pattern());
+            	log.warn(source);
+            }
         }
     }
     
@@ -239,27 +243,13 @@ public class Html2StructBrowser implements BrowseInterface {
     /**
      * matcher find within timeout
      */
-    @SuppressWarnings("deprecation")
     private boolean matcher_find(final Matcher m, int timeout) {
-        final List<Boolean> success = new ArrayList<Boolean>();
-        try {
-            final Thread thread = Thread.currentThread();
-            Thread t = new Thread(new Runnable() {
-                public void run() {
-                    success.add( m.find() );
-                    thread.interrupt();
-                }
-            });
-            t.setDaemon(true);
-            t.start();
-            Thread.sleep(timeout);
-            t.stop();
-            if(log.isWarnEnabled()) log.warn("the find() is forced to be closed: " + m.pattern().pattern());
-            return false;
-        }
-        catch (InterruptedException e) {
-            return success.size()>0?success.get(0):false;
-        }
+    	try {
+    		return m.find();
+    	}
+    	catch(Throwable t) {
+    		return false;
+    	}
     }
 
     /**

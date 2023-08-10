@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.regexlab</groupId>
   <artifactId>html-structured-core</artifactId>
-  <version>0.9.01</version>
+  <version>0.9.02</version>
   <name/>
   <description/>
   <dependencies>

@@ -16,7 +16,7 @@ import com.regexlab.htm2struct.request.*;
 public class SimpleRequester implements RequestInterface {
     private static Log log = LogFactory.getLog(SimpleRequester.class);
 
-    public boolean request(RequestContext context) {
+    public boolean request(RequestContext context) throws IOException {
         
         // get url
         String url     = context.getUrl();
@@ -126,7 +126,7 @@ public class SimpleRequester implements RequestInterface {
         }
         catch (IOException e) {
             if(log.isErrorEnabled()) log.error("request failed ", e);
-            return false;
+            throw e;
         }
         finally {
             if(conn != null) {
