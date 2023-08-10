@@ -186,6 +186,8 @@ public class SimpleRequester implements RequestInterface {
         
         // method
         conn.setRequestMethod(post?"POST":"GET");
+        conn.setConnectTimeout(60000);
+        conn.setReadTimeout(60000);
 
         // headers
         for(Map.Entry<String, String> e : context.getRequestHeaders().entrySet()) {
